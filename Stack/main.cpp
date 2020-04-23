@@ -1,124 +1,124 @@
-#include<iostream>
+ï»¿#include<iostream>
 #include<string.h>
 #include "Stack.h"
 #include<math.h>
-#define N_OPTR 9 //ÔËËã·û×ÜÊı
-typedef enum { ADD, SUB, MUL, DIV, POW, FAC, L_P, R_P, EOE } Operator; //ÔËËã·û¼¯ºÏ
-//¼Ó¡¢¼õ¡¢³Ë¡¢³ı¡¢³Ë·½¡¢½×³Ë¡¢×óÀ¨ºÅ¡¢ÓÒÀ¨ºÅ¡¢ÆğÊ¼·û²»ÖÕÖ¹·û
+#define N_OPTR 9 //è¿ç®—ç¬¦æ€»æ•°
+typedef enum { ADD, SUB, MUL, DIV, POW, FAC, L_P, R_P, EOE } Operator; //è¿ç®—ç¬¦é›†åˆ
+//åŠ ã€å‡ã€ä¹˜ã€é™¤ã€ä¹˜æ–¹ã€é˜¶ä¹˜ã€å·¦æ‹¬å·ã€å³æ‹¬å·ã€èµ·å§‹ç¬¦ä¸ç»ˆæ­¢ç¬¦
 using namespace std;
-void convert(Stack<char> &s, int n,int base);//½øÖÆ×ª»»
+void convert(Stack<char> &s, int n,int base);//è¿›åˆ¶è½¬æ¢
 float evaluate ( char* S, char* RPN );
-bool paren ( const char exp[], int lo, int hi );//À¨ºÅÆ¥Åä
-void readNumber(char* & p,Stack<float> &opnd);//¶ÁÈ¡SÖĞµÄÊı×Ö²¢ÈëÕ»
-char orderBetween(char &m,char&n);//ÅĞ¶ÏÔËËã·ûË³Ğò
-void append(char* rpn,float opnd);//Ìí¼Óµ½RPN
+bool paren ( const char exp[], int lo, int hi );//æ‹¬å·åŒ¹é…
+void readNumber(char* & p,Stack<float> &opnd);//è¯»å–Sä¸­çš„æ•°å­—å¹¶å…¥æ ˆ
+char orderBetween(char &m,char&n);//åˆ¤æ–­è¿ç®—ç¬¦é¡ºåº
+void append(char* rpn,float opnd);//æ·»åŠ åˆ°RPN
 void append(char* rpn,char optr );
-float calcu(float &pOpnd1,char &op,float &pOpnd2);//Ë«Ä¿ÔËËã·û¼ÆËã
-float calcu(char &op,float &pOpnd);//µ¥Ä¿ÔËËã·û¼ÆËã
+float calcu(float &pOpnd1,char &op,float &pOpnd2);//åŒç›®è¿ç®—ç¬¦è®¡ç®—
+float calcu(char &op,float &pOpnd);//å•ç›®è¿ç®—ç¬¦è®¡ç®—
 Operator oper2rank(char op);
 int main()
 {
    Stack<char> s;
-   //½øÖÆ×ª»»²âÊÔ´úÂë
+   //è¿›åˆ¶è½¬æ¢æµ‹è¯•ä»£ç 
   /*  convert(s,89,2);
    while(!s.empty()) printf("%c",s.pop());
    cout<<endl; */
-   //À¨ºÅÆ¥Åä²âÊÔ´úÂë
+   //æ‹¬å·åŒ¹é…æµ‹è¯•ä»£ç 
    /* char str[]="(213[)]321)";
    bool value;
    value = paren(str,0,sizeof(str)-1);
-   if (value==1) cout<<"Æ¥Åä"<<endl;
-   else cout<<"²»Æ¥Åä"<<endl; */
-   //¼ÆËãÆ÷²âÊÔ´úÂë
+   if (value==1) cout<<"åŒ¹é…"<<endl;
+   else cout<<"ä¸åŒ¹é…"<<endl; */
+   //è®¡ç®—å™¨æµ‹è¯•ä»£ç 
    char str[]="(0!+1)*2^(3!+4)-(5!-67-(8+9))";
    char RPN[64]={'\0'};
    float sum;
    sum=evaluate(str,RPN);
-   cout<<"½á¹ûÊÇ:  "<<sum<<endl;
+   cout<<"ç»“æœæ˜¯:  "<<sum<<endl;
    system("pause");
 } 
 
 
-//½øÖÆ×ª»»´úÂë:
+//è¿›åˆ¶è½¬æ¢ä»£ç :
 void convert(Stack<char> &s, int n,int base){
-   static char digit[]=//ĞÂ½øÖÆÏÂµÄÊıÎ»ºÅ,¿ÉÊÓÎªbaseÈ¡Öµ·¶Î§µÄÊÊµ±À©³ä
+   static char digit[]=//æ–°è¿›åˆ¶ä¸‹çš„æ•°ä½å·,å¯è§†ä¸ºbaseå–å€¼èŒƒå›´çš„é€‚å½“æ‰©å……
                      {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
-   while(n>0){//ÓÉµÍµ½¸ß,ÖğÒ»¼ÆËã³öĞÂ½øÖÆÏÂµÄ¸÷ÊıÎ»?
-      s.push(digit[n % base]);//ÓàÊıÈëÕ»
-      n/=base;//n¸üĞÂÎªÆä¶ÔbaseµÄÉÌ
+   while(n>0){//ç”±ä½åˆ°é«˜,é€ä¸€è®¡ç®—å‡ºæ–°è¿›åˆ¶ä¸‹çš„å„æ•°ä½?
+      s.push(digit[n % base]);//ä½™æ•°å…¥æ ˆ
+      n/=base;//næ›´æ–°ä¸ºå…¶å¯¹baseçš„å•†
    }
 }
 
-//À¨ºÅÆ¥Åä´úÂë:ÈçºÎÅĞ¶¨±í´ïÊ½ÖĞÀ¨ºÅÊÇ·ñÆ¥Åä,const char:Ö¸ÏòµÄÄÚÈİ²»¿É¸ü¸Ä
-bool paren ( const char exp[], int lo, int hi ) { //±í´ïÊ½À¨ºÅÆ¥Åä¼ì²é£¬¿É¼æçïÈıÖÖÀ¨ºÅ
- Stack<char> S; //Ê¹
- for ( int i = lo; i <= hi; i++ ) /* ÖğÒ»¼ì²é×Ö·û */ 
+//æ‹¬å·åŒ¹é…ä»£ç :å¦‚ä½•åˆ¤å®šè¡¨è¾¾å¼ä¸­æ‹¬å·æ˜¯å¦åŒ¹é…,const char:æŒ‡å‘çš„å†…å®¹ä¸å¯æ›´æ”¹
+bool paren ( const char exp[], int lo, int hi ) { //è¡¨è¾¾å¼æ‹¬å·åŒ¹é…æ£€æŸ¥ï¼Œå¯å…¼é¡¼ä¸‰ç§æ‹¬å·
+ Stack<char> S; //ä½¿
+ for ( int i = lo; i <= hi; i++ ) /* é€ä¸€æ£€æŸ¥å­—ç¬¦ */ 
  switch ( exp[i] ) { //
    case '(': case '[': case '{': S.push ( exp[i] ); 
             break;
-   case ')': if ( ( S.empty() ) || ( '(' != S.pop() ) ) return false;//ÕâÁ½¸öÌõ¼şÓĞÒ»¸öÂú×ã¾Íreturn false 
+   case ')': if ( ( S.empty() ) || ( '(' != S.pop() ) ) return false;//è¿™ä¸¤ä¸ªæ¡ä»¶æœ‰ä¸€ä¸ªæ»¡è¶³å°±return false 
             break;
    case ']': if ( ( S.empty() ) || ( '[' != S.pop() ) ) return false; 
             break;
    case '}': if ( ( S.empty() ) || ( '{' != S.pop() ) ) return false; 
             break;
-   default: break; //·ÇÀ¨ºÅ×Ö·ûÒ»ÂÉºöÂÔ
+   default: break; //éæ‹¬å·å­—ç¬¦ä¸€å¾‹å¿½ç•¥
  }
- return S.empty(); //Õû¸ö±í´ïÊ½É¨Ãè¹ıºó£¬Õ»ÖĞÈôÈÔ²ĞÁô£¨×ó£©À¨ºÅ£¬Ôò²»Æ¥Åä£»·ñÔò£¨Õ»¿Õ£©Æ¥Åä
+ return S.empty(); //æ•´ä¸ªè¡¨è¾¾å¼æ‰«æè¿‡åï¼Œæ ˆä¸­è‹¥ä»æ®‹ç•™ï¼ˆå·¦ï¼‰æ‹¬å·ï¼Œåˆ™ä¸åŒ¹é…ï¼›å¦åˆ™ï¼ˆæ ˆç©ºï¼‰åŒ¹é…
 }
 
-//±í´ïÊ½ÇóÖµËã·¨
+//è¡¨è¾¾å¼æ±‚å€¼ç®—æ³•
 
 
-const char pri[N_OPTR][N_OPTR] = { //ÔËËã·ûÓÅÏÈµÈ¼¶ [Õ»¶¥] [µ±Ç°]
-/* |-------------------- µ± Ç° ÔË Ëã ·û --------------------| */
+const char pri[N_OPTR][N_OPTR] = { //è¿ç®—ç¬¦ä¼˜å…ˆç­‰çº§ [æ ˆé¡¶] [å½“å‰]
+/* |-------------------- å½“ å‰ è¿ ç®— ç¬¦ --------------------| */
 /*          +    -    *    /    ^    !    (   )    \0 */
 /* -- + */ '>', '>', '<', '<', '<', '<', '<', '>', '>',
 /* | - */ '>', '>', '<', '<', '<', '<', '<', '>', '>',
-/* Õ» * */ '>', '>', '>', '>', '<', '<', '<', '>', '>',
-/* ¶¥ / */ '>', '>', '>', '>', '<', '<', '<', '>', '>',
-/* ÔË ^ */ '>', '>', '>', '>', '>', '<', '<', '>', '>',
-/* Ëã ! */ '>', '>', '>', '>', '>', '>', ' ', '>', '>',
-/* ·û ( */ '<', '<', '<', '<', '<', '<', '<', '=', ' ',
+/* æ ˆ * */ '>', '>', '>', '>', '<', '<', '<', '>', '>',
+/* é¡¶ / */ '>', '>', '>', '>', '<', '<', '<', '>', '>',
+/* è¿ ^ */ '>', '>', '>', '>', '>', '<', '<', '>', '>',
+/* ç®— ! */ '>', '>', '>', '>', '>', '>', ' ', '>', '>',
+/* ç¬¦ ( */ '<', '<', '<', '<', '<', '<', '<', '=', ' ',
 /* | ) */ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
 /* -- \0 */ '<', '<', '<', '<', '<', '<', '<', ' ', '='
 };
 
-float evaluate ( char* S, char *RPN ) { //¶Ô£¨ÒÑÌŞ³ı¿Õ¸ñ£©±í´ïÊ½SÇóÖµ£¬²¢×ª»»ÎªÄæ²¨À¼Ê½RPN
-   Stack<float> opnd; Stack<char> optr; //ÔËËãÊıÕ»¡¢ÔËËã·ûÕ»
-   optr.push ( '\0' ); //Î²ÉÚ±ø'\0'Ò²×÷ÎªÍ·ÉÚ±øÊ×ÏÈÈëÕ»
+float evaluate ( char* S, char *RPN ) { //å¯¹ï¼ˆå·²å‰”é™¤ç©ºæ ¼ï¼‰è¡¨è¾¾å¼Sæ±‚å€¼ï¼Œå¹¶è½¬æ¢ä¸ºé€†æ³¢å…°å¼RPN
+   Stack<float> opnd; Stack<char> optr; //è¿ç®—æ•°æ ˆã€è¿ç®—ç¬¦æ ˆ
+   optr.push ( '\0' ); //å°¾å“¨å…µ'\0'ä¹Ÿä½œä¸ºå¤´å“¨å…µé¦–å…ˆå…¥æ ˆ
    while ( !optr.empty() ) {
-      if ( isdigit ( *S ) ) { //Èôµ±Ç°×Ö·ûÎª²Ù×÷Êı£¬Ôò
-      readNumber ( S, opnd ); //¶ÁÈ¡²Ù×÷Êı
+      if ( isdigit ( *S ) ) { //è‹¥å½“å‰å­—ç¬¦ä¸ºæ“ä½œæ•°ï¼Œåˆ™
+      readNumber ( S, opnd ); //è¯»å–æ“ä½œæ•°
       //sS++;
-      append ( RPN, opnd.top() ); //¶ÁÈë²Ù×÷Êı£¬²¢½«Æä½ÓÖÁRPNÄ©Î²
-      } else //Èôµ±Ç°×Ö·ûÎªÔËËã·û£¬Ôò
-      switch ( orderBetween ( optr.top(), *S ) ) { //¹æÆä²»Õ»¶¥ÔËËã·û¼äÓÅÏÈ¼¶¸ßµÍ·ÖÉ¾´¦Àí
-         case '<': //Õ»¶¥ÔËËã·ûÓÅÏÈ¼¶¸üµÍÊ±
-            optr.push ( *S ); S++; //¼ÆËãÍÆ³Ù£¬µ±Ç°ÔËËã·û½øÕ»
+      append ( RPN, opnd.top() ); //è¯»å…¥æ“ä½œæ•°ï¼Œå¹¶å°†å…¶æ¥è‡³RPNæœ«å°¾
+      } else //è‹¥å½“å‰å­—ç¬¦ä¸ºè¿ç®—ç¬¦ï¼Œåˆ™
+      switch ( orderBetween ( optr.top(), *S ) ) { //è§„å…¶ä¸æ ˆé¡¶è¿ç®—ç¬¦é—´ä¼˜å…ˆçº§é«˜ä½åˆ†åˆ å¤„ç†
+         case '<': //æ ˆé¡¶è¿ç®—ç¬¦ä¼˜å…ˆçº§æ›´ä½æ—¶
+            optr.push ( *S ); S++; //è®¡ç®—æ¨è¿Ÿï¼Œå½“å‰è¿ç®—ç¬¦è¿›æ ˆ
          break;
-         case '=': //ÓÅÏÈ¼¶ÏàµÈ£¨µ±Ç°ÔËËã·ûÎªÓÒÀ¨ºÅ½äÕßÎ²²¿ÉÚ±ø'\0'£©Ê±
-            optr.pop(); S++; //ÍÑÀ¨ºÅ½ÓÊÕÏÂÒ»¸ö×Ö·û
+         case '=': //ä¼˜å…ˆçº§ç›¸ç­‰ï¼ˆå½“å‰è¿ç®—ç¬¦ä¸ºå³æ‹¬å·æˆ’è€…å°¾éƒ¨å“¨å…µ'\0'ï¼‰æ—¶
+            optr.pop(); S++; //è„±æ‹¬å·æ¥æ”¶ä¸‹ä¸€ä¸ªå­—ç¬¦
          break;
-         case '>': { //Õ»¶¥ÔËËã·ûÓÅÏÈ¼¶¸ü¸ßÊ±£¬¿ÉÊµÊ©ÏàÓ¦µÄ¼ÆËã£¬²¢½«½á¹ûÖØĞÂÈëÕ»
+         case '>': { //æ ˆé¡¶è¿ç®—ç¬¦ä¼˜å…ˆçº§æ›´é«˜æ—¶ï¼Œå¯å®æ–½ç›¸åº”çš„è®¡ç®—ï¼Œå¹¶å°†ç»“æœé‡æ–°å…¥æ ˆ
             char op = optr.pop(); 
-            append ( RPN, op ); //Õ»¶¥ÔËËã·û³öÕ»²¢Ğø½ÓÖÁRPNÄ©Î²
-         if ( '!' == op ) { //ÈôÊôÓÚÒ»ÔªÔËËã·û
-            float pOpnd = opnd.pop(); //…³Ğèµ¯³öÒ»¸ö²Ù×÷Êı£¬
-            opnd.push ( calcu ( op, pOpnd ) ); //ÊµÊ©Ò»Ôª¼ÆËã£¬½á¹ûÈëÕ»
-         } else { //¶ÔÓÚÆäËü£¨¶şÔª£©ÔËËã·û
-            float pOpnd2 = opnd.pop(), pOpnd1 = opnd.pop(); //µ¯³öºó¡¢Ç°²Ù×÷Êı
-            opnd.push ( calcu ( pOpnd1, op, pOpnd2 ) ); //ÊµÊ©¶şÔª¼ÆËã£¬½á¹ûÈëÕ» 
+            append ( RPN, op ); //æ ˆé¡¶è¿ç®—ç¬¦å‡ºæ ˆå¹¶ç»­æ¥è‡³RPNæœ«å°¾
+         if ( '!' == op ) { //è‹¥å±äºä¸€å…ƒè¿ç®—ç¬¦
+            float pOpnd = opnd.pop(); //å§éœ€å¼¹å‡ºä¸€ä¸ªæ“ä½œæ•°ï¼Œ
+            opnd.push ( calcu ( op, pOpnd ) ); //å®æ–½ä¸€å…ƒè®¡ç®—ï¼Œç»“æœå…¥æ ˆ
+         } else { //å¯¹äºå…¶å®ƒï¼ˆäºŒå…ƒï¼‰è¿ç®—ç¬¦
+            float pOpnd2 = opnd.pop(), pOpnd1 = opnd.pop(); //å¼¹å‡ºåã€å‰æ“ä½œæ•°
+            opnd.push ( calcu ( pOpnd1, op, pOpnd2 ) ); //å®æ–½äºŒå…ƒè®¡ç®—ï¼Œç»“æœå…¥æ ˆ 
          }
          break;
          }
-         default : exit ( -1 ); //·êÓï·¨´íÎó£¬²»×ö´¦ÀíÖ±½ÓÍË³ö
+         default : exit ( -1 ); //é€¢è¯­æ³•é”™è¯¯ï¼Œä¸åšå¤„ç†ç›´æ¥é€€å‡º
          }//switch
       }//while
-   return opnd.pop(); //µ¯³öÔŞ†»Ø×îºóµÄ¼ÆËã½á¹û
+   return opnd.pop(); //å¼¹å‡ºå¹µè¿’å›æœ€åçš„è®¡ç®—ç»“æœ
 }
 
-float calcu(float &pOpnd1,char &op,float &pOpnd2){//Ë«Ä¿ÔËËã
+float calcu(float &pOpnd1,char &op,float &pOpnd2){//åŒç›®è¿ç®—
    float sum;
    switch (op)
    {
@@ -138,7 +138,7 @@ float calcu(float &pOpnd1,char &op,float &pOpnd2){//Ë«Ä¿ÔËËã
    return sum;
 }
 
-float calcu(char &op,float &pOpnd){//µ¥Ä¿ÔËËã
+float calcu(char &op,float &pOpnd){//å•ç›®è¿ç®—
    float sum=1;
    for(;pOpnd>0;pOpnd--){
       sum*=pOpnd;
@@ -146,25 +146,25 @@ float calcu(char &op,float &pOpnd){//µ¥Ä¿ÔËËã
    return sum;
 }
 
-void append(char* rpn,float opnd){ //½«²Ù×÷Êı½ÓÖÁRPNÄ©Î²
+void append(char* rpn,float opnd){ //å°†æ“ä½œæ•°æ¥è‡³RPNæœ«å°¾
    int n=strlen(rpn);
    char buf[64];
-   if (opnd !=(float)(int)opnd) sprintf(buf,"%0.2f ",opnd);//¸¡µã¸ñÊ½
-   else sprintf(buf,"%d ",(int)opnd);//ÕûÊı¸ñÊ½
-   strcat(rpn,buf);//rpn¼Ó³¤,Ä¬ÈÏ¿Õ¼ä³ä×ã
+   if (opnd !=(float)(int)opnd) sprintf(buf,"%0.2f ",opnd);//æµ®ç‚¹æ ¼å¼
+   else sprintf(buf,"%d ",(int)opnd);//æ•´æ•°æ ¼å¼
+   strcat(rpn,buf);//rpnåŠ é•¿,é»˜è®¤ç©ºé—´å……è¶³
 }
-void append(char* rpn,char optr ){//rpn¼Ó³¤,Ä¬ÈÏ¿Õ¼ä³ä×ã
+void append(char* rpn,char optr ){//rpnåŠ é•¿,é»˜è®¤ç©ºé—´å……è¶³
    int n=strlen(rpn);
    rpn[n+1] = optr;
    rpn[n+2] ='\0';
 }
 
-void readNumber(char* & p,Stack<float> &stk){//¾ÍÊÇÓÉÓÚÕâ¸öÓ¦ÓÃ,S»áËæ×ÅpÒ»Æğ++
-   stk.push((float)(*p-'0'));//µ±Ç°ÊıÎ»¶ÔÓ¦ÊıÖµ½øÕ»
-   while(isdigit(*(++p)))//Ö»ÒªºóĞø»¹ÓĞ½ôÁÚµÄÊı×Ö(¼´¶àÎ»ÕûÊıµÄÇé¿ö)£¬Ôò
-      stk.push(stk.pop()*10+(*p-'0'));//µ¯³öÔ­Êı²¢×·¼ÓĞÂÎ»ºó,ÊıÖµÖØĞÂÈëÕ»
-   if('.'!=*p) return;//Ã»ÓĞĞ¡Êıµã£¬Ö±½Ó·µ»Ø
-   float fraction =1 ;//·ñÔò£¬ÒâÎ¶×ÅÓĞĞ¡Êı²¿·Ö
+void readNumber(char* & p,Stack<float> &stk){//å°±æ˜¯ç”±äºè¿™ä¸ªåº”ç”¨,Sä¼šéšç€pä¸€èµ·++
+   stk.push((float)(*p-'0'));//å½“å‰æ•°ä½å¯¹åº”æ•°å€¼è¿›æ ˆ
+   while(isdigit(*(++p)))//åªè¦åç»­è¿˜æœ‰ç´§é‚»çš„æ•°å­—(å³å¤šä½æ•´æ•°çš„æƒ…å†µ)ï¼Œåˆ™
+      stk.push(stk.pop()*10+(*p-'0'));//å¼¹å‡ºåŸæ•°å¹¶è¿½åŠ æ–°ä½å,æ•°å€¼é‡æ–°å…¥æ ˆ
+   if('.'!=*p) return;//æ²¡æœ‰å°æ•°ç‚¹ï¼Œç›´æ¥è¿”å›
+   float fraction =1 ;//å¦åˆ™ï¼Œæ„å‘³ç€æœ‰å°æ•°éƒ¨åˆ†
    while(isdigit(*(++p))){
       fraction/=10;
       stk.push(stk.pop()+(*p-'0')*fraction);
